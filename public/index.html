@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UPSC Prelims Tutor | AI-Powered Preparation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-tertiary: #1a1a25;
+      --accent: #10a37f;
+      --accent-light: #1ed9a4;
+      --accent-dark: #0d8a6a;
+      --text-primary: #ececf1;
+      --text-secondary: #8e8ea0;
+      --border: rgba(255,255,255,0.08);
+      --orange: #ff6b35;
+      --blue: #4a9eff;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+    }
+    
+    .app {
+      display: flex;
+      height: 100vh;
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+    
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-light));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+    
+    .logo-text h1 {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    
+    .logo-text span {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+    
+    .countdown {
+      background: linear-gradient(135deg, var(--orange), #ff8f5a);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .countdown-days {
+      font-size: 2.5rem;
+      font-weight: 700;
+    }
+    
+    .countdown-label {
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+    
+    .countdown-date {
+      font-size: 0.75rem;
+      opacity: 0.8;
+      margin-top: 4px;
+    }
+    
+    .nav-section {
+      margin-bottom: 24px;
+    }
+    
+    .nav-section h3 {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+    
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 10px 12px;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+      margin-bottom: 4px;
+    }
+    
+    .nav-btn:hover {
+      background: var(--bg-tertiary);
+    }
+    
+    .nav-btn.active {
+      background: var(--accent);
+      color: white;
+    }
+    
+    .nav-btn .icon { font-size: 1.1rem; }
+    
+    .phase-indicator {
+      background: var(--bg-tertiary);
+      border-radius: 10px;
+      padding: 14px;
+      margin-top: auto;
+    }
+    
+    .phase-indicator h4 {
+      font-size: 0.8rem;
+      color: var(--accent-light);
+      margin-bottom: 8px;
+    }
+    
+    .phase-indicator p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+    
+    .progress-bar {
+      height: 4px;
+      background: var(--bg-primary);
+      border-radius: 2px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-light));
+      width: 0%;
+      transition: width 0.5s;
+    }
+    
+    /* Main Content */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .header h2 {
+      font-size: 1rem;
+      font-weight: 500;
+    }
+    
+    .model-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-tertiary);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+    
+    .model-badge .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent-light);
+      border-radius: 50%;
+    }
+    
+    #chat-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    
+    .message {
+      display: flex;
+      gap: 16px;
+      max-width: 900px;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .message.user {
+      flex-direction: row-reverse;
+      margin-left: auto;
+    }
+    
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    
+    .message.assistant .avatar {
+      background: var(--accent);
+    }
+    
+    .message.user .avatar {
+      background: var(--blue);
+    }
+    
+    .content {
+      padding: 16px 20px;
+      border-radius: 12px;
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+    
+    .message.assistant .content {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+    }
+    
+    .message.user .content {
+      background: var(--blue);
+    }
+    
+    .content p { margin-bottom: 12px; }
+    .content p:last-child { margin-bottom: 0; }
+    .content ul, .content ol { margin-left: 20px; margin-bottom: 12px; }
+    .content li { margin-bottom: 6px; }
+    .content code {
+      background: rgba(0,0,0,0.3);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+      font-family: 'SF Mono', Monaco, monospace;
+    }
+    .content pre {
+      background: var(--bg-primary);
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 12px 0;
+      border: 1px solid var(--border);
+    }
+    .content strong { color: var(--accent-light); }
+    .content h1, .content h2, .content h3 { 
+      margin: 16px 0 8px; 
+      color: var(--text-primary);
+    }
+    .content h3 { font-size: 1.1rem; }
+    
+    /* Input Area */
+    .input-wrapper {
+      padding: 20px 24px;
+      border-top: 1px solid var(--border);
+    }
+    
+    .quick-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    
+    .quick-btn {
+      padding: 8px 14px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .quick-btn:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+    
+    .input-area {
+      display: flex;
+      gap: 12px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 8px;
+    }
+    
+    #message-input {
+      flex: 1;
+      padding: 12px 16px;
+      border: none;
+      background: transparent;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+      resize: none;
+    }
+    
+    #message-input::placeholder {
+      color: var(--text-secondary);
+    }
+    
+    #send-btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      background: var(--accent);
+      color: white;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    #send-btn:hover {
+      background: var(--accent-light);
+    }
+    
+    #send-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .typing {
+      display: flex;
+      gap: 4px;
+      padding: 4px 0;
+    }
+    
+    .typing span {
+      width: 6px;
+      height: 6px;
+      background: var(--text-secondary);
+      border-radius: 50%;
+      animation: bounce 1.4s infinite;
+    }
+    
+    .typing span:nth-child(2) { animation-delay: 0.2s; }
+    .typing span:nth-child(3) { animation-delay: 0.4s; }
+    
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-6px); }
+    }
+    
+    /* Study Plan Panel */
+    .study-plan-panel {
+      display: none;
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 450px;
+      height: 100vh;
+      background: var(--bg-secondary);
+      border-left: 1px solid var(--border);
+      overflow-y: auto;
+      z-index: 100;
+      padding: 24px;
+    }
+    
+    .study-plan-panel.open { display: block; }
+    
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    
+    .panel-header h2 { font-size: 1.2rem; }
+    
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    
+    .phase-card {
+      background: var(--bg-tertiary);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    
+    .phase-card h3 {
+      font-size: 1rem;
+      color: var(--accent-light);
+      margin-bottom: 4px;
+    }
+    
+    .phase-card .weeks {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+    
+    .phase-card ul {
+      margin-left: 16px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+    
+    .phase-card li { margin-bottom: 6px; }
+    
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .study-plan-panel { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">🏛️</div>
+        <div class="logo-text">
+          <h1>UPSC Tutor</h1>
+          <span>Powered by GPT-5.2</span>
+        </div>
+      </div>
+      
+      <div class="countdown">
+        <div class="countdown-days" id="days-left">113</div>
+        <div class="countdown-label">Days to Prelims</div>
+        <div class="countdown-date">May 24, 2026</div>
+      </div>
+      
+      <nav class="nav-section">
+        <h3>Subjects</h3>
+        <button class="nav-btn" data-subject="Give me an overview of Indian History for UPSC and key topics to focus on">
+          <span class="icon">📜</span> History
+        </button>
+        <button class="nav-btn" data-subject="Explain the Geography syllabus for UPSC Prelims and give me 5 important concepts">
+          <span class="icon">🌍</span> Geography
+        </button>
+        <button class="nav-btn" data-subject="What are the most important Polity topics for UPSC Prelims? Start with the basics.">
+          <span class="icon">⚖️</span> Polity
+        </button>
+        <button class="nav-btn" data-subject="Explain the Economy section of UPSC and important concepts I must know">
+          <span class="icon">💰</span> Economy
+        </button>
+        <button class="nav-btn" data-subject="What Science & Technology topics are important for UPSC? Give recent developments.">
+          <span class="icon">🔬</span> Science & Tech
+        </button>
+        <button class="nav-btn" data-subject="Cover the Environment & Ecology section - biodiversity, climate, conventions">
+          <span class="icon">🌿</span> Environment
+        </button>
+      </nav>
+      
+      <nav class="nav-section">
+        <h3>Practice</h3>
+        <button class="nav-btn" data-subject="Give me 10 mixed MCQs from different subjects with answers and explanations">
+          <span class="icon">📝</span> MCQ Practice
+        </button>
+        <button class="nav-btn" data-subject="Show me 5 previous year UPSC questions and explain the answer approach">
+          <span class="icon">📚</span> Previous Years
+        </button>
+        <button class="nav-btn" id="plan-btn">
+          <span class="icon">📅</span> Study Plan
+        </button>
+      </nav>
+      
+      <div class="phase-indicator">
+        <h4>📍 Current Phase</h4>
+        <p>Phase 1: Foundation Building</p>
+        <p style="font-size: 0.75rem; margin-top: 4px;">Focus on NCERTs & Basics</p>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress"></div>
+        </div>
+      </div>
+    </aside>
+    
+    <main class="main">
+      <header class="header">
+        <h2>💬 Chat with your AI Tutor</h2>
+        <div class="model-badge">
+          <span class="dot"></span>
+          GPT-5.2 Active
+        </div>
+      </header>
+      
+      <div id="chat-container">
+        <div class="message assistant">
+          <div class="avatar">🎓</div>
+          <div class="content">
+            <p><strong>Jai Hind, Denzil! 🇮🇳</strong></p>
+            <p>I'm your UPSC Prelims AI tutor, powered by <strong>GPT-5.2</strong> — OpenAI's most intelligent model. We have <strong>113 days</strong> until the exam on <strong>May 24, 2026</strong>.</p>
+            <p>Starting from zero? Perfect. With focused AI-augmented learning, we can absolutely crack this. Here's our battle plan:</p>
+            <ul>
+              <li><strong>Phase 1 (Feb):</strong> Foundation — NCERTs, basic concepts</li>
+              <li><strong>Phase 2 (Mar-Apr 11):</strong> Deep dive — Subject mastery + Current affairs</li>
+              <li><strong>Phase 3 (Apr 12-May 9):</strong> Mocks + Revision</li>
+              <li><strong>Phase 4 (May 10-23):</strong> Final polish + Confidence</li>
+            </ul>
+            <p>Ask me anything — concepts, MCQs, study strategy, current affairs, or just pick a subject from the sidebar. Let's begin! 🚀</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="input-wrapper">
+        <div class="quick-actions">
+          <button class="quick-btn" data-prompt="Create my daily study schedule for this week">📅 Today's Plan</button>
+          <button class="quick-btn" data-prompt="What are the top 5 current affairs topics this month for UPSC?">📰 Current Affairs</button>
+          <button class="quick-btn" data-prompt="Give me 5 MCQs on Indian Polity - Fundamental Rights">⚖️ Polity MCQs</button>
+          <button class="quick-btn" data-prompt="Explain the UPSC Prelims exam pattern and marking scheme">📋 Exam Pattern</button>
+          <button class="quick-btn" data-prompt="What books should I read for each subject? Give me a complete booklist.">📚 Booklist</button>
+          <button class="quick-btn" data-prompt="Give me 5 geography MCQs on Indian monsoon system">🌍 Geography MCQs</button>
+        </div>
+        <div class="input-area">
+          <input type="text" id="message-input" placeholder="Ask me anything about UPSC Prelims..." autofocus>
+          <button id="send-btn">Send →</button>
+        </div>
+      </div>
+    </main>
+    
+    <!-- Study Plan Panel -->
+    <div class="study-plan-panel" id="study-plan">
+      <div class="panel-header">
+        <h2>📅 16-Week Study Plan</h2>
+        <button class="close-btn" id="close-plan">×</button>
+      </div>
+      
+      <div class="phase-card">
+        <h3>Phase 1: Foundation</h3>
+        <div class="weeks">Weeks 1-4 (Feb 1 - Feb 28)</div>
+        <ul>
+          <li>Complete all NCERTs (History, Geography, Polity, Science)</li>
+          <li>Laxmikanth Chapters 1-35</li>
+          <li>Start daily newspaper reading</li>
+          <li>Map work practice</li>
+        </ul>
+      </div>
+      
+      <div class="phase-card">
+        <h3>Phase 2: Deep Dive</h3>
+        <div class="weeks">Weeks 5-10 (Mar 1 - Apr 11)</div>
+        <ul>
+          <li>Spectrum Modern India</li>
+          <li>GC Leong Physical Geography</li>
+          <li>Ramesh Singh Economy</li>
+          <li>Shankar IAS Environment</li>
+          <li>Daily MCQ practice (50+)</li>
+          <li>Previous year analysis</li>
+        </ul>
+      </div>
+      
+      <div class="phase-card">
+        <h3>Phase 3: Consolidation</h3>
+        <div class="weeks">Weeks 11-14 (Apr 12 - May 9)</div>
+        <ul>
+          <li>20+ Full mock tests</li>
+          <li>Mistake analysis journal</li>
+          <li>Rapid revision cycles</li>
+          <li>Weak area intensive</li>
+          <li>Current affairs compilation</li>
+        </ul>
+      </div>
+      
+      <div class="phase-card">
+        <h3>Phase 4: Final Sprint</h3>
+        <div class="weeks">Weeks 15-16 (May 10 - May 23)</div>
+        <ul>
+          <li>Light revision only</li>
+          <li>Quick facts revision</li>
+          <li>Rest and mental prep</li>
+          <li>Exam day strategy</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const chatContainer = document.getElementById('chat-container');
+    const messageInput = document.getElementById('message-input');
+    const sendBtn = document.getElementById('send-btn');
+    const quickBtns = document.querySelectorAll('.quick-btn');
+    const subjectBtns = document.querySelectorAll('.nav-btn[data-subject]');
+    const studyPlanPanel = document.getElementById('study-plan');
+    const planBtn = document.getElementById('plan-btn');
+    const closeBtn = document.getElementById('close-plan');
+    
+    const sessionId = 'session_' + Date.now();
+    
+    // Calculate days remaining
+    const examDate = new Date('2026-05-24');
+    const today = new Date();
+    const daysLeft = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
+    document.getElementById('days-left').textContent = daysLeft;
+    
+    // Progress calculation (rough estimate based on timeline)
+    const totalDays = 113;
+    const daysPassed = totalDays - daysLeft;
+    const progress = Math.max(0, Math.min(100, (daysPassed / totalDays) * 100));
+    document.getElementById('progress').style.width = progress + '%';
+    
+    function formatMessage(text) {
+      return text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/`(.*?)`/g, '<code>$1</code>')
+        .replace(/###\s?(.*?)(\n|$)/g, '<h3>$1</h3>')
+        .replace(/##\s?(.*?)(\n|$)/g, '<h2>$1</h2>')
+        .replace(/\n\n/g, '</p><p>')
+        .split('\n').join('<br>');
+    }
+    
+    function addMessage(content, role) {
+      const div = document.createElement('div');
+      div.className = `message ${role}`;
+      div.innerHTML = `
+        <div class="avatar">${role === 'user' ? '👤' : '🎓'}</div>
+        <div class="content"><p>${formatMessage(content)}</p></div>
+      `;
+      chatContainer.appendChild(div);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+    
+    function addTypingIndicator() {
+      const div = document.createElement('div');
+      div.className = 'message assistant';
+      div.id = 'typing';
+      div.innerHTML = `
+        <div class="avatar">🎓</div>
+        <div class="content">
+          <div class="typing"><span></span><span></span><span></span></div>
+        </div>
+      `;
+      chatContainer.appendChild(div);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+    
+    function removeTypingIndicator() {
+      const typing = document.getElementById('typing');
+      if (typing) typing.remove();
+    }
+    
+    async function sendMessage(message) {
+      if (!message.trim()) return;
+      
+      addMessage(message, 'user');
+      messageInput.value = '';
+      sendBtn.disabled = true;
+      addTypingIndicator();
+      
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message, sessionId })
+        });
+        
+        const data = await res.json();
+        removeTypingIndicator();
+        
+        if (data.response) {
+          addMessage(data.response, 'assistant');
+        } else if (data.error) {
+          addMessage('Error: ' + data.error, 'assistant');
+        }
+      } catch (error) {
+        removeTypingIndicator();
+        addMessage('Connection error. Is the server running?', 'assistant');
+      }
+      
+      sendBtn.disabled = false;
+      messageInput.focus();
+    }
+    
+    sendBtn.addEventListener('click', () => sendMessage(messageInput.value));
+    messageInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendMessage(messageInput.value);
+    });
+    
+    quickBtns.forEach(btn => {
+      btn.addEventListener('click', () => sendMessage(btn.dataset.prompt));
+    });
+    
+    subjectBtns.forEach(btn => {
+      btn.addEventListener('click', () => sendMessage(btn.dataset.subject));
+    });
+    
+    planBtn.addEventListener('click', () => {
+      studyPlanPanel.classList.add('open');
+    });
+    
+    closeBtn.addEventListener('click', () => {
+      studyPlanPanel.classList.remove('open');
+    });
+  </script>
+</body>
+</html>
