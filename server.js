@@ -220,8 +220,14 @@ const STUDY_PLAN = {
   ]
 };
 
-const PORT = process.env.PORT || 3456;
-app.listen(PORT, () => {
-  console.log(`🏛️ UPSC Prelims Tutor (GPT-5.2) running at http://localhost:${PORT}`);
-  console.log(`📅 ${STUDY_PLAN.overview.totalDays} days until Prelims!`);
-});
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 3456;
+  app.listen(PORT, () => {
+    console.log(`🏛️ UPSC Prelims Tutor (GPT-5.2) running at http://localhost:${PORT}`);
+    console.log(`📅 ${STUDY_PLAN.overview.totalDays} days until Prelims!`);
+  });
+}
+
+// Export for Vercel serverless
+module.exports = app;
