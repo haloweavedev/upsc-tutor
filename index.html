@@ -475,9 +475,25 @@
       </div>
       
       <div class="countdown">
-        <div class="countdown-days" id="days-left">113</div>
+        <div class="countdown-days" id="days-left">--</div>
         <div class="countdown-label">Days to Prelims</div>
         <div class="countdown-date">May 24, 2026</div>
+      </div>
+      
+      <div class="application-status" style="background: var(--bg-tertiary); border-radius: 10px; padding: 14px; margin-bottom: 20px;">
+        <h4 style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 10px;">📋 Application Status</h4>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span style="font-size: 0.8rem; color: var(--text-secondary);">Deadline</span>
+          <span style="font-size: 0.85rem; font-weight: 600; color: var(--orange);">Feb 24, 2026</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span style="font-size: 0.8rem; color: var(--text-secondary);">Days Left</span>
+          <span id="app-days-left" style="font-size: 0.85rem; font-weight: 600; color: var(--orange);">--</span>
+        </div>
+        <div style="height: 4px; background: var(--bg-primary); border-radius: 2px; overflow: hidden;">
+          <div id="app-progress" style="height: 100%; background: linear-gradient(90deg, var(--orange), #ff8f5a); width: 0%;"></div>
+        </div>
+        <div style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 6px; text-align: center;">⚠️ Apply early to avoid server rush!</div>
       </div>
       
       <nav class="nav-section">
@@ -539,7 +555,8 @@
           <div class="avatar">🎓</div>
           <div class="content">
             <p><strong>Jai Hind, Denzil! 🇮🇳</strong></p>
-            <p>I'm your UPSC Prelims AI tutor, powered by <strong>GPT-5.2</strong> — OpenAI's most intelligent model. We have <strong>113 days</strong> until the exam on <strong>May 24, 2026</strong>.</p>
+            <p>I'm your UPSC Prelims AI tutor, powered by <strong>GPT-5.2</strong> — OpenAI's most intelligent model. We have <strong><span id="welcome-days">--</span> days</strong> until the exam on <strong>May 24, 2026</strong>.</p>
+            <p>⚠️ <strong>Important:</strong> Application deadline is <strong>Feb 24, 2026</strong> — make sure you've applied!</p>
             <p>Starting from zero? Perfect. With focused AI-augmented learning, we can absolutely crack this. Here's our battle plan:</p>
             <ul>
               <li><strong>Phase 1 (Feb):</strong> Foundation — NCERTs, basic concepts</li>
@@ -636,13 +653,34 @@
     
     const sessionId = 'session_' + Date.now();
     
-    // Calculate days remaining
+    // Calculate days remaining to Prelims
     const examDate = new Date('2026-05-24');
     const today = new Date();
     const daysLeft = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
     document.getElementById('days-left').textContent = daysLeft;
+    document.getElementById('welcome-days').textContent = daysLeft;
     
-    // Progress calculation (rough estimate based on timeline)
+    // Calculate days remaining to Application Deadline
+    const appDeadline = new Date('2026-02-24T18:00:00+05:30');
+    const appDaysLeft = Math.ceil((appDeadline - today) / (1000 * 60 * 60 * 24));
+    const appDaysElement = document.getElementById('app-days-left');
+    const appProgressElement = document.getElementById('app-progress');
+    
+    if (appDaysLeft > 0) {
+      appDaysElement.textContent = appDaysLeft + ' days';
+      // Application window is 20 days (Feb 4 - Feb 24)
+      const appWindowDays = 20;
+      const appDaysPassed = appWindowDays - appDaysLeft;
+      const appProgress = Math.max(0, Math.min(100, (appDaysPassed / appWindowDays) * 100));
+      appProgressElement.style.width = appProgress + '%';
+    } else {
+      appDaysElement.textContent = 'CLOSED';
+      appDaysElement.style.color = '#ff4444';
+      appProgressElement.style.width = '100%';
+      appProgressElement.style.background = '#ff4444';
+    }
+    
+    // Progress calculation for study plan (rough estimate based on timeline)
     const totalDays = 113;
     const daysPassed = totalDays - daysLeft;
     const progress = Math.max(0, Math.min(100, (daysPassed / totalDays) * 100));
@@ -698,7 +736,7 @@
       addTypingIndicator();
       
       try {
-        const res = await fetch('/api/chat.js', {
+        const res = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message, sessionId })

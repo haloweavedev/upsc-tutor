@@ -5,7 +5,12 @@ require('dotenv').config();
 
 const app = express();
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(__dirname));
+
+// Serve index.html for root
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
